@@ -48,9 +48,9 @@ class Board(object):
 
         # The last 3 entries of the board state includes initiative (0 for
         # player 1, 1 for player 2) player 2 last move, and player 1 last move
-        self._board_state = [Board.BLANK] * (width * height + 3)
-        self._board_state[-1] = Board.NOT_MOVED
-        self._board_state[-2] = Board.NOT_MOVED
+        self._board_state = [Board.BLANK] * (width * height + 3) # 52x 0s, [0, 0, ...]
+        self._board_state[-1] = Board.NOT_MOVED # Make last list item None
+        self._board_state[-2] = Board.NOT_MOVED # Make second-to-last list item None
 
     def hash(self):
         return str(self._board_state).__hash__()
@@ -167,7 +167,7 @@ class Board(object):
         else:
             raise RuntimeError(
                 "Invalid player in get_player_location: {}".format(player))
-        w = idx // self.height
+        w = idx // self.height # Keep only the whole number, drop the decimal places, no rounding
         h = idx % self.height
         return (h, w)
 
@@ -199,11 +199,11 @@ class Board(object):
             A coordinate pair (row, column) indicating the next position for
             the active player on the board.
         """
-        idx = move[0] + move[1] * self.height
-        last_move_idx = int(self.active_player == self._player_2) + 1
-        self._board_state[-last_move_idx] = idx
-        self._board_state[idx] = 1
-        self._board_state[-3] ^= 1
+        idx = move[0] + move[1] * self.height # 2 + 3 * 7 = 23
+        last_move_idx = int(self.active_player == self._player_2) + 1 # 1 for p1, 2 for p2
+        self._board_state[-last_move_idx] = idx # _board_state[-2] is p1 at idx 23
+        self._board_state[idx] = 1 # _board_state[23] = 1, now blocked
+        self._board_state[-3] ^= 1 # Initiative is now 1 for p2 (since it was 0 for p1)
         self._active_player, self._inactive_player = self._inactive_player, self._active_player
         self.move_count += 1
 
