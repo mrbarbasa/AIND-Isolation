@@ -212,8 +212,68 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        best_score = float('-inf')
+        best_move = (-1, -1)
+        legal_moves = game.get_legal_moves()
+
+        if not legal_moves:
+            return best_move
+
+        for m in legal_moves:
+            v = self.__min_value(game.forecast_move(m), depth - 1)
+            if v > best_score:
+                best_score = v
+                best_move = m
+
+        return best_move
+
+    def __min_value(self, game, depth):
+        """ Return the value for a win (+1) if the game is over,
+        otherwise return the minimum value over all legal child
+        nodes.
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        if self.__terminal_test(game):
+            return 1
+
+        if depth <= 0:
+            return self.score(game, self)
+
+        v = float('inf')
+        for m in game.get_legal_moves():
+            v = min(v, self.__max_value(game.forecast_move(m), depth - 1))
+        return v
+
+    def __max_value(self, game, depth):
+        """ Return the value for a loss (-1) if the game is over,
+        otherwise return the maximum value over all legal child
+        nodes.
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        if self.__terminal_test(game):
+            return -1
+
+        if depth <= 0:
+            return self.score(game, self)
+
+        v = float('-inf')
+        for m in game.get_legal_moves():
+            v = max(v, self.__min_value(game.forecast_move(m), depth - 1))
+        return v
+
+    def __terminal_test(self, game):
+        """ Return True if the game is over for the active player
+        and False otherwise.
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        legal_moves_available = bool(game.get_legal_moves())
+        return not legal_moves_available
 
 
 class AlphaBetaPlayer(IsolationPlayer):
