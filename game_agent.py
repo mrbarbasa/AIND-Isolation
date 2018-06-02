@@ -317,11 +317,12 @@ class AlphaBetaPlayer(IsolationPlayer):
         # Initialize the best move so that this function returns something
         # in case the search fails due to timeout
         best_move = (-1, -1)
-        iterative_deepening_limit = 51 # Search 50 levels
 
         try:
-            for d in range(1, iterative_deepening_limit):
-                best_move = self.alphabeta(game, d)
+            depth = 1
+            while True:
+                best_move = self.alphabeta(game, depth)
+                depth += 1
                 if self.time_left() < self.TIMER_THRESHOLD:
                     return best_move
 
