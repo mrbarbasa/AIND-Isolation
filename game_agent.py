@@ -34,8 +34,27 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    own_legal_moves = game.get_legal_moves(player)
+    own_moves = len(own_legal_moves)
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    base_move_score = float(2 * own_moves - opp_moves)
+
+    total_score = 0
+    for m in own_legal_moves:
+        game_depth_1 = game.forecast_move(m)
+        game_depth_1_current_player = game_depth_1.inactive_player
+        game_depth_1_own_moves = len(game_depth_1.get_legal_moves(game_depth_1_current_player))
+        child_move_score = 0.5 * game_depth_1_own_moves
+        total_score += child_move_score
+
+    mean_score = 0.0 if own_moves == 0 else (total_score / own_moves)
+    return base_move_score + mean_score
 
 
 def custom_score_2(game, player):
