@@ -3,6 +3,7 @@ test your agent's strength against a set of known agents using tournament.py
 and include the results in your report.
 """
 import random
+import math
 
 
 class SearchTimeout(Exception):
@@ -112,8 +113,15 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    w, h = (game.width - 1) / 2., (game.height - 1) / 2.
+    y, x = game.get_player_location(player)
+    return float(math.fabs(h - y) + math.fabs(w - x))
 
 
 class IsolationPlayer:
